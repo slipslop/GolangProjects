@@ -11,6 +11,16 @@ import (
 	"strings"
 )
 
+type stats struct {
+	totalQuestions int
+	answersCorrect int
+}
+
+type questionAnswerPair struct {
+	question string
+	answer   string
+}
+
 func main() {
 	fileName := flag.String("file", "source.csv", "a string")
 	flag.Parse()
@@ -22,11 +32,9 @@ func main() {
 
 	defer file.Close()
 
-	csvReader := csv.NewReader(file)
+	statsRecorder := stats{totalQuestions: 0, answersCorrect: 0}
 	stdinReader := bufio.NewReader(os.Stdin)
-
-	var answersCorrect int = 0
-	var answersWrong int = 0
+	csvReader := csv.NewReader(file)
 
 	for {
 		record, err := csvReader.Read()
@@ -39,27 +47,25 @@ func main() {
 			log.Fatal(err)
 		}
 
-		var question string = record[0]
-		var answer string = record[1]
+		pair := questionAnswerPair{question: record[0], answer: record[1]}
 
-		fmt.Print(question, " ?")
+		fmt.Print(pair.question, ": ")
+
 		input, err := stdinReader.ReadString('\n')
+
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		input = strings.ReplaceAll(input, "\n", "")
 
-		fmt.Println((input))
-		fmt.Println((answer))
-		if input == answer {
-			answersCorrect++
-		} else {
-			answersWrong++
+		if input == pair.answer {
+			statsRecorder.answersCorrect++
 		}
 
+		statsRecorder.totalQuestions++
 	}
 
 	fmt.Println("game is now over... your stats:")
-	fmt.Println(answersCorrect, answersWrong)
+	fmt.Println("You got ", statsRecorder.answersCorrect, "/", statsRecorder.totalQuestions, " right!")
 }
