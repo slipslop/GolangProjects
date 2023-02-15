@@ -1,2 +1,2 @@
 # csv-parser-app
-CSV parser made with Golang
+CSV parser "quiz game" made with Golang
