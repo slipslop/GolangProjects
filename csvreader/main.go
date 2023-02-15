@@ -1,14 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"encoding/csv"
 	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
-	"strings"
 )
 
 type stats struct {
@@ -33,7 +31,6 @@ func main() {
 	defer file.Close()
 
 	statsRecorder := stats{totalQuestions: 0, answersCorrect: 0}
-	stdinReader := bufio.NewReader(os.Stdin)
 	csvReader := csv.NewReader(file)
 
 	for {
@@ -51,13 +48,8 @@ func main() {
 
 		fmt.Print(pair.question, ": ")
 
-		input, err := stdinReader.ReadString('\n')
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		input = strings.ReplaceAll(input, "\n", "")
+		var input string
+		fmt.Scanf("%s\n", &input)
 
 		if input == pair.answer {
 			statsRecorder.answersCorrect++
